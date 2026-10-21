@@ -16,15 +16,17 @@
 <meta name="twitter:card" content="summary">
 <meta name="keywords" content="চবি ভাড়া, চট্টগ্রাম বিশ্ববিদ্যালয় ভাড়া, চবি রিকশা ভাড়া, চবি সিএনজি ভাড়া, চবি ই-কার ভাড়া, চাকসু ভাড়া তালিকা, CU fare, CU rickshaw fare, CU CNG fare, Chittagong University e-car fare, Chittagong University transport fare">
 <meta name="robots" content="index,follow,max-image-preview:large">
-<link rel="canonical" href="https://USERNAME.github.io/REPO/">
+<link rel="canonical" href="https://mihossaincu.github.io/cu-fare/">
 <meta property="og:site_name" content="CU Campus Fare Calculator">
-<meta property="og:url" content="https://USERNAME.github.io/REPO/">
+<meta property="og:url" content="https://mihossaincu.github.io/cu-fare/">
 <meta property="og:locale" content="bn_BD">
 <meta property="og:locale:alternate" content="en_US">
 <meta name="twitter:title" content="চবি ভাড়া ক্যালকুলেটর · CU Campus Fare Calculator">
 <meta name="twitter:description" content="চাকসু কর্তৃক প্রকাশিত তালিকা অনুসারে ক্যাম্পাসের রিকশা, সিএনজি ও ই-কার ভাড়া দেখুন।">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "CU Campus Fare Calculator", "alternateName": ["চবি ভাড়া ক্যালকুলেটর"], "description": "Chittagong University campus rickshaw, CNG and e-car fare calculator based on the list published by CHAKSU.", "applicationCategory": "TravelApplication", "operatingSystem": "Any", "inLanguage": ["bn", "en"], "url": "https://USERNAME.github.io/REPO/", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "BDT"}}</script>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛺</text></svg>">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "CU Campus Fare Calculator", "alternateName": ["চবি ভাড়া ক্যালকুলেটর"], "description": "Chittagong University campus rickshaw, CNG and e-car fare calculator based on the list published by CHAKSU.", "applicationCategory": "TravelApplication", "operatingSystem": "Any", "inLanguage": ["bn", "en"], "url": "https://mihossaincu.github.io/cu-fare/", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "BDT"}}</script>
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
 <link href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@500;700;800&family=Hind+Siliguri:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#eaf1ec;--surface:#fff;--ink:#0f2620;--muted:#5a726a;--line:#d2ded6;--soft:#e3f0e8;--brand:#127a4f;--brand2:#0b4d36;--brand-ink:#fff;--accent:#ffc83d;--accent-ink:#2a2000;--danger:#b3261e;--dangerbg:#fdecea;--c0:#f2a900;--c1:#17a05d;--c2:#0b9ac4;
@@ -163,6 +165,16 @@ dialog.fm{background:var(--surface);border-radius:20px;width:430px;max-height:90
 .shbtn.ig{background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)}
 .shbtn.more{background:var(--muted);color:#fff}
 
+
+.bp{font-size:14px}
+#installBar{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:60;display:flex;gap:8px;align-items:center;background:#0b4d36;color:#fff;border-radius:999px;padding:7px 7px 7px 16px;box-shadow:0 10px 30px rgba(0,0,0,.28);font:600 14px/1.3 system-ui,sans-serif;max-width:calc(100% - 24px)}
+#installBar[hidden]{display:none}
+#installBtn{background:#F4B400;color:#1d1d1d;border:0;border-radius:999px;padding:9px 16px;font:700 14px system-ui,sans-serif;cursor:pointer;position:relative;overflow:hidden;animation:cuPulse 2s ease-in-out infinite}
+#installBtn::after{content:"";position:absolute;top:0;left:-75%;width:50%;height:100%;background:linear-gradient(120deg,transparent,rgba(255,255,255,.75),transparent);animation:cuShine 2.8s ease-in-out infinite}
+#installDismiss{background:transparent;border:0;color:#d6eadf;font:500 13px system-ui,sans-serif;cursor:pointer;padding:6px}
+@keyframes cuPulse{0%,100%{box-shadow:0 0 0 0 rgba(244,180,0,.6)}50%{box-shadow:0 0 0 10px rgba(244,180,0,0)}}
+@keyframes cuShine{0%{left:-75%}60%,100%{left:125%}}
+@media (prefers-reduced-motion:reduce){#installBtn,#installBtn::after{animation:none}}
 </style>
 </head>
 <body>
@@ -295,7 +307,31 @@ dialog.fm{background:var(--surface);border-radius:20px;width:430px;max-height:90
 </dialog>
 
 <script>
-const fareData = [
+const SHEET_CSV="https://docs.google.com/spreadsheets/d/e/PUBLISHED_ID/pub?gid=0&single=true&output=csv"; // ← Google Sheet "Publish to web" CSV লিংক বসান
+function splitCSV(line){const out=[];let cur="",q=false;for(let i=0;i<line.length;i++){const ch=line[i];if(q){if(ch==='"'&&line[i+1]==='"'){cur+='"';i++}else if(ch==='"')q=false;else cur+=ch}else{if(ch===',')out.push(cur),cur="";else if(ch==='"')q=true;else cur+=ch}}out.push(cur);return out}
+function parseCSV(txt){
+  const lines=txt.replace(/\r/g,"").split("\n").filter(x=>x.trim());
+  const head=splitCSV(lines.shift()).map(h=>h.trim().toLowerCase());
+  const iF=head.indexOf("from"),iT=head.indexOf("to"),iR=head.indexOf("rickshaw"),iC=head.indexOf("cng"),iE=head.indexOf("ecar");
+  if(iF<0||iT<0||iR<0)throw new Error("bad header");
+  const num=v=>{const x=(v||"").trim();if(x==="")return null;const n=Number(x);return Number.isFinite(n)?n:null};
+  return lines.map(splitCSV).filter(c=>c[iF]&&c[iT]).map(c=>({from:c[iF].trim(),to:c[iT].trim(),rickshaw:num(c[iR]),cng:iC>=0?num(c[iC]):null,ecar:iE>=0?num(c[iE]):null}));
+}
+async function loadRows(fb){
+  if(SHEET_CSV.includes("PUBLISHED_ID"))return fb;
+  try{
+    const ctrl=new AbortController(),tm=setTimeout(()=>ctrl.abort(),8000);
+    const res=await fetch(SHEET_CSV,{cache:"no-store",signal:ctrl.signal});
+    clearTimeout(tm);
+    if(!res.ok)throw new Error("HTTP "+res.status);
+    const rows=parseCSV(await res.text());
+    if(!rows.length)throw new Error("empty sheet");
+    return rows;
+  }catch(e){console.warn("Fare sheet unavailable, using built-in data:",e);return fb}
+}
+async function boot(){
+
+const FALLBACK_ROWS = [
   { from: "চাকসু", to: "অতীশ দীপঙ্কর হল", rickshaw: 20, cng: null, ecar: null },
   { from: "চাকসু", to: "আলাওল হল", rickshaw: 20, cng: null, ecar: null },
   { from: "চাকসু", to: "এ.এফ রহমান হল", rickshaw: 20, cng: null, ecar: null },
@@ -528,11 +564,13 @@ const fareData = [
   { from: "২নং গেইট", to: "সোহরাওয়ার্দী হল", rickshaw: 10, cng: null, ecar: 5 },
   { from: "২নং গেইট", to: "৩নং গোডাউন", rickshaw: 20, cng: null, ecar: null },
 ];
-const allLocations = ["অতীশ দীপঙ্কর হল", "আইন অনুষদ", "আলাওল হল", "উত্তর ক্যাম্পাস মসজিদ", "এ.এফ রহমান হল", "কেন্দ্রীয় মসজিদ", "খেলার মাঠ", "গ্রীন হাউজ", "চাকসু", "জিমনেসিয়াম", "জিরো পয়েন্ট", "জীববিজ্ঞান অনুষদ", "টিচার্স কোয়ার্টার", "দক্ষিণ ক্যাম্পাস মসজিদ", "দোলা স্বর্ণী", "নতুন কলা ফ্যাকাল্টি", "নবাব ফয়জুনেসা হল", "নীপবন স্কুল", "পানির কুল", "পুরাতন কলা ফ্যাকাল্টি", "প্রকৌশল দপ্তর", "প্রক্টর অফিস", "প্রশাসনিক ভবন", "প্রীতিলতা হল", "ফরেস্ট্রি", "বিজ্ঞান অনুষদ", "বিজ্ঞান অনুষদ (পশ্চিম)", "বিজ্ঞান অনুষদ (পূর্ব)", "বিজয় ২৪ হল", "বিবিএ ফ্যাকাল্টি", "বেগম খালেদা জিয়া হল", "বোটানিক্যাল গার্ডেন", "মদন ফকির মাজার", "মেডিকেল সেন্টার", "মেরিন সাইন্স", "রেইল গেইট", "রেজিস্ট্রার ভবন", "লাইব্রেরী", "লেডিস হল", "শহীদ আব্দুর রব হল", "শহীদ তরুণ্য ভবন", "শহীদ ফরহাদ হোসেন হল", "শহীদ মিনার", "শামসুন নাহার হল", "শাহ আমানত হল", "সমাজবিজ্ঞান অনুষদ", "সেন্ট্রাল ফিল্ড", "সোহরাওয়ার্দী মোড়", "সোহরাওয়ার্দী হল", "১নং গেইট", "২নং গেইট", "৩নং গোডাউন"];
+const fareData = await loadRows(FALLBACK_ROWS);
+let allLocations = ["অতীশ দীপঙ্কর হল", "আইন অনুষদ", "আলাওল হল", "উত্তর ক্যাম্পাস মসজিদ", "এ.এফ রহমান হল", "কেন্দ্রীয় মসজিদ", "খেলার মাঠ", "গ্রীন হাউজ", "চাকসু", "জিমনেসিয়াম", "জিরো পয়েন্ট", "জীববিজ্ঞান অনুষদ", "টিচার্স কোয়ার্টার", "দক্ষিণ ক্যাম্পাস মসজিদ", "দোলা স্বর্ণী", "নতুন কলা ফ্যাকাল্টি", "নবাব ফয়জুনেসা হল", "নীপবন স্কুল", "পানির কুল", "পুরাতন কলা ফ্যাকাল্টি", "প্রকৌশল দপ্তর", "প্রক্টর অফিস", "প্রশাসনিক ভবন", "প্রীতিলতা হল", "ফরেস্ট্রি", "বিজ্ঞান অনুষদ", "বিজ্ঞান অনুষদ (পশ্চিম)", "বিজ্ঞান অনুষদ (পূর্ব)", "বিজয় ২৪ হল", "বিবিএ ফ্যাকাল্টি", "বেগম খালেদা জিয়া হল", "বোটানিক্যাল গার্ডেন", "মদন ফকির মাজার", "মেডিকেল সেন্টার", "মেরিন সাইন্স", "রেইল গেইট", "রেজিস্ট্রার ভবন", "লাইব্রেরী", "লেডিস হল", "শহীদ আব্দুর রব হল", "শহীদ তরুণ্য ভবন", "শহীদ ফরহাদ হোসেন হল", "শহীদ মিনার", "শামসুন নাহার হল", "শাহ আমানত হল", "সমাজবিজ্ঞান অনুষদ", "সেন্ট্রাল ফিল্ড", "সোহরাওয়ার্দী মোড়", "সোহরাওয়ার্দী হল", "১নং গেইট", "২নং গেইট", "৩নং গোডাউন"];
 const EN={"অতীশ দীপঙ্কর হল": "Atish Dipankar Hall", "আইন অনুষদ": "Faculty of Law", "আলাওল হল": "Alaol Hall", "উত্তর ক্যাম্পাস মসজিদ": "North Campus Mosque", "এ.এফ রহমান হল": "A.F. Rahman Hall", "কেন্দ্রীয় মসজিদ": "Central Mosque", "খেলার মাঠ": "Playground", "গ্রীন হাউজ": "Green House", "চাকসু": "CHAKSU", "জিমনেসিয়াম": "Gymnasium", "জিরো পয়েন্ট": "Zero Point", "জীববিজ্ঞান অনুষদ": "Faculty of Biological Sciences", "টিচার্স কোয়ার্টার": "Teachers’ Quarter", "দক্ষিণ ক্যাম্পাস মসজিদ": "South Campus Mosque", "দোলা স্বর্ণী": "Dola Sarani", "নতুন কলা ফ্যাকাল্টি": "New Arts Faculty", "নবাব ফয়জুনেসা হল": "Nawab Faizunnesa Hall", "নীপবন স্কুল": "Nipobon School", "পানির কুল": "Panir Cool", "পুরাতন কলা ফ্যাকাল্টি": "Old Arts Faculty", "প্রকৌশল দপ্তর": "Engineering Office", "প্রক্টর অফিস": "Proctor Office", "প্রশাসনিক ভবন": "Administration Building", "প্রীতিলতা হল": "Pritilata Hall", "ফরেস্ট্রি": "Forestry", "বিজ্ঞান অনুষদ": "Faculty of Science", "বিজ্ঞান অনুষদ (পশ্চিম)": "Faculty of Science (West)", "বিজ্ঞান অনুষদ (পূর্ব)": "Faculty of Science (East)", "বিজয় ২৪ হল": "Bijoy 24 Hall", "বিবিএ ফ্যাকাল্টি": "BBA Faculty", "বেগম খালেদা জিয়া হল": "Begum Khaleda Zia Hall", "বোটানিক্যাল গার্ডেন": "Botanical Garden", "মদন ফকির মাজার": "Madan Fakir Mazar", "মেডিকেল সেন্টার": "Medical Center", "মেরিন সাইন্স": "Marine Science", "রেইল গেইট": "Rail Gate", "রেজিস্ট্রার ভবন": "Registrar Building", "লাইব্রেরী": "Central Library", "লেডিস হল": "Ladies Hall", "শহীদ আব্দুর রব হল": "Shaheed Abdur Rob Hall", "শহীদ তরুণ্য ভবন": "Shaheed Tarunya Bhaban", "শহীদ ফরহাদ হোসেন হল": "Shaheed Farhad Hossain Hall", "শহীদ মিনার": "Shaheed Minar", "শামসুন নাহার হল": "Shamsunnahar Hall", "শাহ আমানত হল": "Shah Amanat Hall", "সমাজবিজ্ঞান অনুষদ": "Faculty of Social Sciences", "সেন্ট্রাল ফিল্ড": "Central Field", "সোহরাওয়ার্দী মোড়": "Suhrawardy Crossing", "সোহরাওয়ার্দী হল": "Suhrawardy Hall", "১নং গেইট": "Gate No. 1", "২নং গেইট": "Gate No. 2", "৩নং গোডাউন": "Godown No. 3"};
 /* চবির অফিসিয়াল লোগো বসাতে: ছবিটিকে data URI (data:image/png;base64,...) করে নিচের LOGO-তে দিন */
 const LOGO="";
 const DISP={"লাইব্রেরী":"সেন্ট্রাল লাইব্রেরী"};
+allLocations=[...new Set([...allLocations,...fareData.flatMap(r=>[r.from,r.to])])];
 const HUBS=["জিরো পয়েন্ট","চাকসু","বিজ্ঞান অনুষদ","১নং গেইট","২নং গেইট","শহীদ মিনার","সোহরাওয়ার্দী হল"];
 const CG=[["১নং গেইট"],["রেইল গেইট"],["জিরো পয়েন্ট"],["বিবিএ ফ্যাকাল্টি","শহীদ মিনার"],["প্রশাসনিক ভবন","লাইব্রেরী","পুরাতন কলা ফ্যাকাল্টি"],["চাকসু"],["বিজ্ঞান অনুষদ (পূর্ব)","বিজ্ঞান অনুষদ (পশ্চিম)"],["জীববিজ্ঞান অনুষদ","মেরিন সাইন্স"]];
 const CNG_PATH=[...CG.flat(),"বিজ্ঞান অনুষদ"];
@@ -543,7 +581,7 @@ bn:{title:"চবি ভাড়া ক্যালকুলেটর",sub:"চ
 en:{title:"CU Fare Calculator",sub:"Chittagong University internal transport fares",stamp:"✓ Based on the list published by CHAKSU",tabCalc:"Calculator",tabList:"Fare list",tabRules:"Rules",routeH:"Choose your route",from:"From",to:"To",ph:"Type to search or pick",swap:"Swap start and destination",paxL:"Passengers (rickshaw)",less:"Fewer passengers",more:"More passengers",show:"Show fare 🎫",viaT:"🔄 No direct route. Pick any stop as Via or search — cheapest options are suggested first.",viaPh:"Search any stop",viaOk:"Cheapest Via options are shown first. Both legs are added on your ticket.",viaNone:"No Via found for this route.",none:"No match found",cngH:"🛺 CNG route",cngNote:"E-cars run everywhere except Gate No. 1. Rickshaws run on all routes. CNG and e-car fares are per person.",listH:"Complete fare list",search:"Search by place name",thFrom:"From",thTo:"To",v0:"Rickshaw",v1:"CNG",v2:"E-car",rulesH:"⚠️ Rickshaw fare rules",r1:"The listed fare applies for 1 or 2 passengers.",r2:"For more than 2, on fares up to ৳25, add <strong>৳5</strong> per extra person.",r3:"On fares above ৳25, add <strong>৳10</strong> per extra person.",r4:"CNG and e-car fares are per person (per seat).",infoH:"ℹ️ Good to know",i1:"The list is based on information published by CHAKSU.",i2:"If there is no direct route, pick a Via to calculate the fare.",i3:"If a driver overcharged you, use the complaint button on your ticket.",f1:"Data source: Chittagong University Central Students’ Union (CHAKSU)",f2:"An initiative by <strong>Md. Imam Hossain</strong>",f3:"Courtesy of <strong>Shaheed Zia Smriti Sangsad, CU Branch</strong>",f4:"Anonymous usage counts are collected with GoatCounter: no cookies, no personal data.",fNote:"This complaint goes to the Proctor Office number on WhatsApp. This is an independent fare-list initiative, not a publication of the Proctor Office.",tkSub:"Chittagong University internal fares",tFromL:"From",tToL:"To",na:"N/A",full:"Whole fare",per:"per person",pp:"pax",pxs:"passengers",paxMeta:"Passengers",direct:"Direct route",viaWord:"Via",close:"Close",share:"Share",complain:"⚠️ Complain",cr:"Md. Imam Hossain • Shaheed Zia Smriti Sangsad, CU Branch",noRoute:"No direct route. Close this and pick a Via.",ex:(p,b,n,k,t)=>`📌 ${p} passengers: base ৳${b} + (${n}×৳${k}) = <strong>৳${t}</strong>`,fmH:"⚠️ Fare complaint form",fRoute:"Route",fVeh:"Vehicle",fActual:"Listed fare (৳)",fClaim:"Fare demanded (৳) *",fClaimPh:"What the driver asked",fDriver:"Driver name (optional)",fDriverPh:"Driver's name",fMobile:"Driver mobile (optional)",fMobilePh:"01XXXXXXXXX",fName:"Your name *",fNamePh:"Your name",fDept:"Department / Hall *",fDeptPh:"Department or hall name",fDet:"Details",fDetPh:"Briefly describe what happened",fPhoto:"Driver’s photo (optional)",cancel:"Cancel",send:"📲 Send on WhatsApp",req:"Please fill in name, department/hall and the fare demanded.",ph2:"The photo was not attached this way. Please send it separately on WhatsApp.",lang:"বাং",shTitle:"CU Fare Calculator",recent:"Recent routes",copy:"📋 Copy",copied:"✓ Copied"}
 };
 const $=id=>document.getElementById(id);
-let L="bn";try{L=localStorage.getItem("lang")||"bn"}catch(e){}
+let L="bn";try{L=localStorage.getItem("lang")||"bn"}catch(e){}window.__L=()=>L;
 const t=k=>T[L][k];
 const bnd=n=>Number(n).toLocaleString("bn-BD");
 const nf=n=>L==="bn"?bnd(n):String(n);
@@ -628,6 +666,22 @@ function renderVia(){
 $("viaChips").onclick=e=>{const b=e.target.closest(".chip");if(!b)return;const v=VC[+b.dataset.i].v;S.via=S.via===v?"":v;$("viaInput").value=S.via?nm(S.via):"";renderVia()};
 
 /* ticket */
+function bpModes(a,b){
+  const d=findDirect(a,b)||{}, rk=getRickshaw(a,b);
+  return{
+    rk: rk!=null?calcRickshaw(rk,pax):null,
+    cg: d.cng!=null&&cngOk(a,b)?d.cng*pax:null,
+    ec: d.ecar!=null&&ecarOk(a,b)?d.ecar*pax:null
+  };
+}
+const bpAdd=(x,y)=>({rk:x.rk!=null&&y.rk!=null?x.rk+y.rk:null,cg:x.cg!=null&&y.cg!=null?x.cg+y.cg:null,ec:x.ec!=null&&y.ec!=null?x.ec+y.ec:null});
+const bpCheap=m=>{const v=[m.rk,m.cg,m.ec].filter(x=>x!=null);return v.length?Math.min(...v):null};
+const bpLine=m=>[m.rk!=null?`🛺 ৳${nf(m.rk)}`:null,m.cg!=null?`⛽ ৳${nf(m.cg)}`:null,m.ec!=null?`⚡ ৳${nf(m.ec)}`:null].filter(Boolean).join(" · ")||"—";
+function bestBypass(from,to){
+  const c=allLocations.filter(h=>h!==from&&h!==to).map(v=>{const a=bpModes(from,v),b=bpModes(v,to),t=bpAdd(a,b);return{v,a,b,t,cost:bpCheap(t)}})
+    .filter(x=>x.cost!=null).sort((x,y)=>x.cost-y.cost);
+  return c[0]||null;
+}
 function showTicket(){
   const{from,to,via}=S;
   if(!from||!to||from===to)return;
@@ -654,7 +708,15 @@ function showTicket(){
   if(r.type==="via")n+=`<div class="mx">🔄 <strong>${nm(from)}</strong> → <strong>${nm(r.via)}</strong> → <strong>${nm(to)}</strong><br><small>${nm(from)}→${nm(r.via)}: ৳${nf(r.r1)} | ${nm(r.via)}→${nm(to)}: ৳${nf(r.r2)}</small></div>`;
   else if(r.type==="none")n+=`<div class="mx bad">${t("noRoute")}</div>`;
   if(r.rickshaw!=null&&pax>2){const k=r.rickshaw<=25?5:10;n+=`<div class="mx nt">${t("ex")(nf(pax),nf(r.rickshaw),nf(pax-2),nf(k),nf(rf))}</div>`}
+  if(!via){
+    const dir=bpModes(from,to), dirBest=bpCheap(dir), bp=bestBypass(from,to);
+    if(bp&&(dirBest==null||bp.cost<dirBest)){
+      const en=L!=="bn";
+      n+=`<div class="mx bp" style="border:2px dashed #F4B400;border-radius:12px;padding:10px;background:rgba(244,180,0,.12)"><strong>${en?"🔀 Bypass option":"🔀 বিকল্প পথ (বাইপাস)"}</strong><br>${nm(from)} → <strong>${nm(bp.v)}</strong> → ${nm(to)}<br><small>${en?"Leg 1":"ধাপ ১"}: ${bpLine(bp.a)}</small><br><small>${en?"Leg 2":"ধাপ ২"}: ${bpLine(bp.b)}</small><br><small>${en?"Total":"মোট"} (${nf(pax)} ${t("pxs")}): ${bpLine(bp.t)}${dirBest!=null?` · ${en?"direct best":"সরাসরি সেরা"}: ৳${nf(dirBest)}`:` · ${en?"no direct ride":"সরাসরি বাহন নেই"}`}</small><br><small>${en?"You change vehicles at "+nm(bp.v)+"; it may take longer.":nm(bp.v)+" থেকে বাহন বদলাতে হবে; সময় বেশি লাগতে পারে।"}</small></div>`;
+    }
+  }
   $("tNote").innerHTML=n;
+  window.cuShownOk=r.type!=="none";
   $("tk").showModal();
 }
 $("show").onclick=showTicket;
@@ -721,7 +783,7 @@ $("fm").addEventListener("click",e=>{if(e.target===$("fm"))$("fm").close()});
 function logo(){const h=LOGO?`<img src="${LOGO}" alt="CU">`:`<span class="mono">${L==="bn"?"চবি":"CU"}</span>`;$("logo").innerHTML=h;$("logo2").innerHTML=h}
 function table(){
   const c=v=>v!=null?`<td class="n">৳${nf(v)}</td>`:'<td class="n na">—</td>';
-  $("tbody").innerHTML=fareData.map(r=>`<tr data-s="${(BNN(r.from)+" "+BNN(r.to)+" "+(EN[r.from]||"")+" "+(EN[r.to]||"")).toLowerCase()}"><td>${nm(r.from)}</td><td>${nm(r.to)}</td>${c(r.rickshaw)}${c(r.cng)}${c(r.ecar)}</tr>`).join("");
+  $("tbody").innerHTML=fareData.map(r=>{const fd=findDirect(r.from,r.to)||{};return{...r,rickshaw:getRickshaw(r.from,r.to),cng:fd.cng!=null&&cngOk(r.from,r.to)?fd.cng:null,ecar:fd.ecar!=null&&ecarOk(r.from,r.to)?fd.ecar:null}}).map(r=>`<tr data-s="${(BNN(r.from)+" "+BNN(r.to)+" "+(EN[r.from]||"")+" "+(EN[r.to]||"")).toLowerCase()}"><td>${nm(r.from)}</td><td>${nm(r.to)}</td>${c(r.rickshaw)}${c(r.cng)}${c(r.ecar)}</tr>`).join("");
   filter();
 }
 const filter=()=>{const q=$("search").value.trim().toLowerCase();document.querySelectorAll("#tbody tr").forEach(r=>r.hidden=q&&!r.dataset.s.includes(q))};
@@ -822,7 +884,37 @@ renderRecent();
 
 
 setLang(L);
+}
+boot();
 </script>
-<script>(function(){var h=location.hostname;if(/^(localhost|127\.0\.0\.1)$/.test(h)||/github\.dev|githubpreview|app\.github\.dev/.test(h))return;var s=document.createElement("script");s.async=true;s.src="https://gc.zgo.at/count.js";s.setAttribute("data-goatcounter","https://USERNAME.goatcounter.com/count");document.body.appendChild(s);})();</script>
+<script>(function(){var h=location.hostname;if(/^(localhost|127\.0\.0\.1)$/.test(h)||/github\.dev|githubpreview|app\.github\.dev/.test(h))return;var s=document.createElement("script");s.async=true;s.src="https://gc.zgo.at/count.js";s.setAttribute("data-goatcounter","https://mihossain.goatcounter.com/count");document.body.appendChild(s);})();</script>
+<div id="installBar" hidden role="region" aria-label="Install app"><span id="installMsg"></span><button id="installBtn" type="button">ইনস্টল</button><button id="installDismiss" type="button">পরে</button></div>
+<script>
+(function(){
+  const isStandalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+  const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  let deferred=null;
+  const bar=document.getElementById('installBar'),btn=document.getElementById('installBtn'),msg=document.getElementById('installMsg'),dis=document.getElementById('installDismiss');
+  const dismissed=()=>{try{return localStorage.getItem('cuInstallDismissed')==='1'}catch(e){return false}};
+  const remember=()=>{try{localStorage.setItem('cuInstallDismissed','1')}catch(e){}};
+  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e});
+  window.addEventListener('appinstalled',()=>{bar.hidden=true;deferred=null});
+  window.cuMaybeInstall=function(){
+    if(isStandalone||dismissed()||(!deferred&&!isIOS))return;
+    msg.textContent=window.__L()==='bn'?'📲 অ্যাপটি ফোনে রাখুন, এক ট্যাপে খুলুন':'📲 Add the app to your phone for one-tap access';
+    btn.textContent=window.__L()==='bn'?'ইনস্টল':'Install';
+    dis.textContent=window.__L()==='bn'?'পরে':'Later';
+    bar.hidden=false;
+  };
+  btn.onclick=async()=>{
+    if(deferred){deferred.prompt();const c=await deferred.userChoice;deferred=null;bar.hidden=true;if(c.outcome!=='accepted')remember();return}
+    alert(window.__L()==='bn'?'iPhone-এ: Safari-র নিচে শেয়ার বোতাম (⬆) চাপুন, তারপর "Add to Home Screen" বেছে নিন।':'On iPhone: tap the Share button (⬆) in Safari, then "Add to Home Screen".');
+  };
+  dis.onclick=()=>{bar.hidden=true;remember()};
+  document.getElementById('tk').addEventListener('close',()=>{if(window.cuShownOk)cuMaybeInstall()});
+  if('serviceWorker' in navigator&&location.protocol.startsWith('http'))
+    window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+})();
+</script>
 </body>
 </html>
